@@ -1,7 +1,9 @@
 package proxy
 
 import (
+	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpproxy"
@@ -15,6 +17,10 @@ func NewSOCKS5Proxy(proxyURL string) (*SOCKS5Proxy, error) {
 	usr, err := url.Parse(proxyURL)
 	if err != nil {
 		return nil, err
+	}
+
+	if !strings.HasPrefix(usr.Scheme, "socks5") {
+		return nil, fmt.Errorf("invalid proxy scheme: expected 'socks5://', got '%s://'", usr.Scheme)
 	}
 
 	proxy := &SOCKS5Proxy{url: proxyURL}
