@@ -52,3 +52,17 @@ func TestSocks5Proxy(t *testing.T) {
 		assert.Nil(t, proxy)
 	})
 }
+
+func TestNewSOCKS5ProxyWithAuth(t *testing.T) {
+	t.Parallel()
+
+	t.Run("ValidURLWithAuth", func(t *testing.T) {
+		proxy, err := NewSOCKS5ProxyWithAuth("socks5://127.0.0.1:1", "spacemagneto", "123456789")
+
+		assert.NoError(t, err)
+		assert.NotNil(t, proxy)
+		assert.Equal(t, "socks5://127.0.0.1:1", proxy.url)
+		assert.Equal(t, "spacemagneto", proxy.username)
+		assert.Equal(t, "123456789", proxy.password)
+	})
+}
