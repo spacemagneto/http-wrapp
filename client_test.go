@@ -14,8 +14,8 @@ func TestClient(t *testing.T) {
 	t.Parallel()
 
 	defaultClient := &fasthttp.Client{
-		ReadTimeout:                   500 * time.Millisecond,
-		WriteTimeout:                  500 * time.Millisecond,
+		ReadTimeout:                   200 * time.Millisecond,
+		WriteTimeout:                  200 * time.Millisecond,
 		MaxIdleConnDuration:           1 * time.Hour,
 		NoDefaultUserAgentHeader:      true,
 		DisableHeaderNamesNormalizing: true,
@@ -44,6 +44,19 @@ func TestClient(t *testing.T) {
 
 	t.Run("InvalidURL", func(t *testing.T) {
 		resp, err := baseClient.Get("http://localhost:1")
+		assert.Error(t, err)
+		assert.Nil(t, resp)
+	})
+
+	t.Run("TimeoutError", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(300 * time.Millisecond)
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer ts.Close()
+
+		resp, err := baseClient.Get(ts.URL)
+
 		assert.Error(t, err)
 		assert.Nil(t, resp)
 	})
