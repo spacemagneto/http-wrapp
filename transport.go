@@ -1,3 +1,7 @@
 package client
 
-// TODO: create interface for fasthttp client transport
+import "github.com/valyala/fasthttp"
+
+type Transport interface {
+	Do(req *fasthttp.Request, res *fasthttp.Response) error
+}
