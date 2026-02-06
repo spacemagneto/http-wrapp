@@ -82,3 +82,14 @@ func TestNewSOCKS5ProxyWithAuth(t *testing.T) {
 		assert.Nil(t, proxy)
 	})
 }
+
+func TestNewSOCKS5ProxyDial(t *testing.T) {
+	t.Parallel()
+
+	t.Run("SuccessInitDialFunc", func(t *testing.T) {
+		proxy, err := NewSOCKS5Proxy("socks5://127.0.0.1:1080")
+		assert.NoError(t, err)
+
+		assert.NotNil(t, proxy.Dial())
+	})
+}
