@@ -92,4 +92,16 @@ func TestNewSOCKS5ProxyDial(t *testing.T) {
 
 		assert.NotNil(t, proxy.Dial())
 	})
+
+	t.Run("FailedInitDialFuncWithInvalidProxyURL", func(t *testing.T) {
+		proxy, err := NewSOCKS5Proxy("socks5://127.0.0.1:1")
+		assert.NoError(t, err)
+
+		dialFunc := proxy.Dial()
+
+		conn, err := dialFunc("google.com")
+
+		assert.Error(t, err)
+		assert.Nil(t, conn)
+	})
 }
