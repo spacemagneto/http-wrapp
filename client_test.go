@@ -36,13 +36,15 @@ func TestClient(t *testing.T) {
 		defer ts.Close()
 
 		resp, err := baseClient.Get(ts.URL)
-		if err != nil {
-			t.Fatalf("Get() should not return error on 500, but got: %v", err)
-		}
+		assert.NoError(t, err)
 		defer fasthttp.ReleaseResponse(resp)
 
-		if resp.StatusCode() != 500 {
-			t.Errorf("expected 500, got %d", resp.StatusCode())
-		}
+		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode())
+	})
+
+	t.Run("InvalidURL", func(t *testing.T) {
+		resp, err := baseClient.Get("http://localhost:1")
+		assert.Error(t, err)
+		assert.Nil(t, resp)
 	})
 }
