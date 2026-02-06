@@ -65,4 +65,13 @@ func TestNewSOCKS5ProxyWithAuth(t *testing.T) {
 		assert.Equal(t, "spacemagneto", proxy.username)
 		assert.Equal(t, "123456789", proxy.password)
 	})
+
+	t.Run("AuthWithOverridesAuthData", func(t *testing.T) {
+		proxy, err := NewSOCKS5ProxyWithAuth("socks5://spacemagneto:123456789@127.0.0.1:1", "spacemagneto_second", "1234567890")
+
+		assert.NoError(t, err)
+		assert.NotNil(t, proxy)
+		assert.Equal(t, "spacemagneto_second", proxy.username)
+		assert.Equal(t, "1234567890", proxy.password)
+	})
 }
