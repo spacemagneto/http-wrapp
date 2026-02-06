@@ -2,8 +2,10 @@ package proxy
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/valyala/fasthttp"
 )
 
 func TestSocks5Proxy(t *testing.T) {
@@ -103,5 +105,23 @@ func TestNewSOCKS5ProxyDial(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, conn)
+	})
+
+	t.Run("SuccessInitDialFuncWithFastHTTPClient", func(t *testing.T) {
+		proxy, err := NewSOCKS5Proxy("socks5://user:pass@127.0.0.1:1080")
+		assert.NoError(t, err)
+
+		client := &fasthttp.Client{ReadTimeout: 300 * time.Millisecond, WriteTimeout: 300 * time.Millisecond, Dial: proxy.Dial()}
+		assert.NotNil(t, client.Dial)
+
+		req := fasthttp.AcquireRequest()
+		res := fasthttp.AcquireResponse()
+		defer fasthttp.ReleaseRequest(req)
+		defer fasthttp.ReleaseResponse(res)
+
+		req.SetRequestURI("https://google.com")
+
+		err = client.Do(req, res)
+		assert.Error(t, err)
 	})
 }
