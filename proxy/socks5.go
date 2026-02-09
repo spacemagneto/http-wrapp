@@ -10,39 +10,20 @@ import (
 )
 
 type SOCKS5Proxy struct {
-	url, username, password string
+	url string
 }
 
 func NewSOCKS5Proxy(proxyURL string) (*SOCKS5Proxy, error) {
-	usr, err := url.Parse(proxyURL)
+	parseURL, err := url.Parse(proxyURL)
 	if err != nil {
 		return nil, err
 	}
 
-	if !strings.HasPrefix(usr.Scheme, "socks5") {
-		return nil, fmt.Errorf("invalid proxy scheme: expected 'socks5://', got '%s://'", usr.Scheme)
+	if !strings.HasPrefix(parseURL.Scheme, "socks5") {
+		return nil, fmt.Errorf("invalid proxy scheme: expected 'socks5://', got '%s://'", parseURL.Scheme)
 	}
 
-	proxy := &SOCKS5Proxy{url: proxyURL}
-
-	if usr.User != nil {
-		proxy.username = usr.User.Username()
-		proxy.password, _ = usr.User.Password()
-	}
-
-	return proxy, err
-}
-
-func NewSOCKS5ProxyWithAuth(proxyURL, username, password string) (*SOCKS5Proxy, error) {
-	proxy, err := NewSOCKS5Proxy(proxyURL)
-	if err != nil {
-		return nil, err
-	}
-
-	proxy.username = username
-	proxy.password = password
-
-	return proxy, nil
+	return &SOCKS5Proxy{url: proxyURL}, nil
 }
 
 func (s *SOCKS5Proxy) Dial() fasthttp.DialFunc {

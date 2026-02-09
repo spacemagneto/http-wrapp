@@ -25,9 +25,7 @@ func NewHTTPProxy(proxyURL string, timeout time.Duration) (*HTTPProxy, error) {
 		return nil, fmt.Errorf("invalid proxy scheme: expected 'http://' or 'https://', got '%s://'", parseURL.Scheme)
 	}
 
-	proxy := &HTTPProxy{url: proxyURL, timeout: timeout}
-
-	return proxy, err
+	return &HTTPProxy{url: proxyURL, timeout: timeout}, nil
 }
 
 func (h *HTTPProxy) Dial() fasthttp.DialFunc {
