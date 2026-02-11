@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 	"time"
 
@@ -12,6 +13,28 @@ import (
 	"github.com/things-go/go-socks5"
 	"github.com/valyala/fasthttp"
 )
+
+func TestNewSOCKS5ProxyProxy(t *testing.T) {
+	cases := []struct {
+		name string
+		url  string
+	}{
+		{name: "Invalid escape sequence", url: "https://proxy.com/bad-percent%"},
+		{name: "Invalid control character", url: "https://proxy.com/space\u007f"},
+		{name: "Invalid port character", url: "https://proxy.com:[:90101]"},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := NewSOCKS5Proxy(tt.url)
+
+			assert.Error(t, err, "Expected an error for url: %s", tt.url)
+			assert.Nil(t, result, "Result should be nil when an error occurs")
+
+			assert.IsType(t, &url.Error{}, err)
+		})
+	}
+}
 
 func TestSocks5Proxy(t *testing.T) {
 	t.Parallel()
