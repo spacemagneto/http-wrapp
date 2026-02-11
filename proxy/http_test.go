@@ -136,4 +136,39 @@ func TestHTTPProxyDial(t *testing.T) {
 		assert.Error(t, requestErr, "Expected timeout error")
 		assert.True(t, duration >= timeout, "Request should have lasted at least as long as the timeout")
 	})
+
+	t.Run("SuccessInitDialFuncWithoutTimeout", func(t *testing.T) {
+		targetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("hello from target"))
+		}))
+		defer targetServer.Close()
+
+		proxyServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("X-Test-Proxy", "http_proxy")
+
+			resp, _ := http.Get(targetServer.URL)
+			w.WriteHeader(resp.StatusCode)
+			_ = resp.Write(w)
+		}))
+		defer proxyServer.Close()
+
+		proxy, err := NewHTTPProxy(proxyServer.URL, 0)
+		assert.NoError(t, err)
+
+		client := &fasthttp.Client{ReadTimeout: 2 * time.Second, WriteTimeout: 2 * time.Second, Dial: proxy.Dial()}
+		assert.NotNil(t, client.Dial)
+
+		req := fasthttp.AcquireRequest()
+		res := fasthttp.AcquireResponse()
+		defer fasthttp.ReleaseRequest(req)
+		defer fasthttp.ReleaseResponse(res)
+
+		req.SetRequestURI(targetServer.URL)
+		err = client.Do(req, res)
+
+		assert.NoError(t, err)
+		assert.Equal(t, 200, res.StatusCode())
+		assert.Equal(t, "http_proxy", string(res.Header.Peek("X-Test-Proxy")))
+	})
 }
