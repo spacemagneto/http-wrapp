@@ -22,4 +22,14 @@ func TestFixedBackoffStrategy(t *testing.T) {
 		assert.NotNil(t, fixed)
 		assert.Equal(t, expectDelay, fixed.delay)
 	})
+
+	t.Run("SuccessGetNext", func(t *testing.T) {
+		expectDelay := 500 * time.Millisecond
+		fixed := NewFixed(expectDelay)
+		assert.NotNil(t, fixed)
+		assert.Equal(t, expectDelay, fixed.delay)
+
+		delay := fixed.Next(97911111)
+		assert.Equal(t, expectDelay, delay)
+	})
 }
