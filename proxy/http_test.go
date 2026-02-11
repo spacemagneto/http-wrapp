@@ -1,6 +1,8 @@
 package proxy
 
 import (
+	"fmt"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -77,7 +79,7 @@ func TestHTTPProxyDial(t *testing.T) {
 		proxy, err := NewHTTPProxy(proxyServer.URL, 2*time.Second)
 		assert.NoError(t, err)
 
-		client := &fasthttp.Client{ReadTimeout: 300 * time.Millisecond, WriteTimeout: 300 * time.Millisecond, Dial: proxy.Dial()}
+		client := &fasthttp.Client{ReadTimeout: 2 * time.Second, WriteTimeout: 2 * time.Second, Dial: proxy.Dial()}
 		assert.NotNil(t, client.Dial)
 
 		req := fasthttp.AcquireRequest()
@@ -91,5 +93,47 @@ func TestHTTPProxyDial(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 200, res.StatusCode())
 		assert.Equal(t, "http_proxy", string(res.Header.Peek("X-Test-Proxy")))
+	})
+
+	t.Run("TimeoutTrigger", func(t *testing.T) {
+		listener, err := net.Listen("tcp", "127.0.0.1:0")
+		assert.NoError(t, err)
+		assert.NotNil(t, listener)
+
+		defer listener.Close()
+
+		go func() {
+			for {
+				connect, connErr := listener.Accept()
+				assert.NoError(t, connErr)
+				assert.NotNil(t, connect)
+
+				<-time.After(1 * time.Second)
+				_ = connect.Close()
+			}
+
+		}()
+
+		timeout := 100 * time.Millisecond
+		link := fmt.Sprintf("http://%s", listener.Addr().String())
+		proxy, err := NewHTTPProxy(link, timeout)
+		assert.NoError(t, err)
+
+		client := &fasthttp.Client{Dial: proxy.Dial()}
+		assert.NotNil(t, client.Dial)
+
+		req := fasthttp.AcquireRequest()
+		res := fasthttp.AcquireResponse()
+		defer fasthttp.ReleaseRequest(req)
+		defer fasthttp.ReleaseResponse(res)
+
+		req.SetRequestURI("https://google.com")
+
+		start := time.Now()
+		requestErr := client.Do(req, res)
+		duration := time.Since(start)
+
+		assert.Error(t, requestErr, "Expected timeout error")
+		assert.True(t, duration >= timeout, "Request should have lasted at least as long as the timeout")
 	})
 }
