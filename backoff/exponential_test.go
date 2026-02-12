@@ -63,4 +63,13 @@ func TestExponentialStrategy(t *testing.T) {
 		delay := exp.Next(2)
 		assert.Equal(t, 4*time.Second, delay)
 	})
+
+	t.Run("SuccessGetNextWithGetMaxDelay", func(t *testing.T) {
+		baseDelay := 1 * time.Second
+		maxDelay := 10 * time.Second
+
+		exp := NewExponentialWithStep(baseDelay, maxDelay, 2)
+		delay := exp.Next(4)
+		assert.Equal(t, maxDelay, delay)
+	})
 }
