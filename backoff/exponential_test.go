@@ -35,8 +35,15 @@ func TestExponentialStrategy(t *testing.T) {
 		assert.Equal(t, step, exponential.step)
 	})
 
-	t.Run("InitWithInvalidStep", func(t *testing.T) {
+	t.Run("InitStrategyWithInvalidStep", func(t *testing.T) {
 		exp := NewExponentialWithStep(time.Second, time.Minute, -0.5)
 		assert.Equal(t, 2.0, exp.step)
+	})
+
+	t.Run("InitStrategyWithInvalidAgrs", func(t *testing.T) {
+		exp := NewExponential(0, -1*time.Second)
+
+		assert.Equal(t, DefaultBaseDelay, exp.baseDelay)
+		assert.Equal(t, DefaultMaxDelay, exp.maxDelay)
 	})
 }
