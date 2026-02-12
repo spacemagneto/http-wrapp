@@ -46,4 +46,12 @@ func TestExponentialStrategy(t *testing.T) {
 		assert.Equal(t, DefaultBaseDelay, exp.baseDelay)
 		assert.Equal(t, DefaultMaxDelay, exp.maxDelay)
 	})
+
+	t.Run("InitStrategyWhenMaxLessThanBase", func(t *testing.T) {
+		baseDelay := 5 * time.Second
+		maxDelay := 1 * time.Second
+		exp := NewExponential(baseDelay, maxDelay)
+
+		assert.Equal(t, baseDelay, exp.maxDelay)
+	})
 }
