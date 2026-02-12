@@ -5,18 +5,36 @@ import (
 	"time"
 )
 
+const (
+	DefaultBaseDelay = 200 * time.Millisecond
+	DefaultMaxDelay  = 10 * time.Second
+	DefaultStep      = 2.0
+)
+
 type Exponential struct {
 	baseDelay, maxDelay time.Duration
 	step                float64
 }
 
 func NewExponential(delay, max time.Duration) *Exponential {
-	return &Exponential{baseDelay: delay, maxDelay: max, step: 2}
+	return NewExponentialWithStep(delay, max, DefaultStep)
 }
 
 func NewExponentialWithStep(delay, max time.Duration, step float64) *Exponential {
-	if step <= 0 {
-		step = 2
+	if delay <= 0 {
+		delay = DefaultBaseDelay
+	}
+
+	if max <= 0 {
+		max = DefaultMaxDelay
+	}
+
+	if max < delay {
+		max = delay
+	}
+
+	if step <= 1.0 {
+		step = DefaultStep
 	}
 
 	return &Exponential{baseDelay: delay, maxDelay: max, step: step}
