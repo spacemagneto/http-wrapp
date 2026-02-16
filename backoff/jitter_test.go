@@ -20,4 +20,12 @@ func TestJitterStrategy(t *testing.T) {
 		assert.Equal(t, baseDelay, exponential.baseDelay)
 		assert.Equal(t, maxDelay, exponential.maxDelay)
 	})
+
+	t.Run("InitStrategyWithDefaultValDelay", func(t *testing.T) {
+		exponential := NewJitter(0, 0)
+		assert.NotNil(t, exponential)
+
+		assert.Equal(t, DefaultJitterBaseDelay, exponential.baseDelay)
+		assert.Equal(t, DefaultJitterMaxDelay, exponential.maxDelay)
+	})
 }
