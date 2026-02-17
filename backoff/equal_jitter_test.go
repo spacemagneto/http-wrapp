@@ -50,4 +50,24 @@ func TestEqualJitter(t *testing.T) {
 		delay := equalJitter.Next(1)
 		assert.True(t, delay >= 0)
 	})
+
+	t.Run("ReturnsNextInStrictRange", func(t *testing.T) {
+		baseDelay := 1 * time.Second
+		maxDelay := 10 * time.Second
+		equalJitter := NewEqualJitter(baseDelay, maxDelay)
+
+		// For attempt = 2:
+		// limit = 1s * 2^2 = 4s
+		// temp = 4s / 2 = 2s
+		// The range should be [2s, 4s)
+
+		minExpected := 2 * time.Second
+		maxExpected := 4 * time.Second
+
+		for i := 0; i < 15; i++ {
+			delay := equalJitter.Next(2)
+			assert.True(t, delay >= minExpected, "Delay %v should be >= %v", delay, minExpected)
+			assert.True(t, delay < maxExpected, "Delay %v should be < %v", delay, maxExpected)
+		}
+	})
 }
