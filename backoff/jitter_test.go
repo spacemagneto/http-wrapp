@@ -37,6 +37,14 @@ func TestJitterStrategy(t *testing.T) {
 		assert.Equal(t, DefaultJitterMaxDelay, exponential.maxDelay)
 	})
 
+	t.Run("InitStrategyWhenMaxLessThanBase", func(t *testing.T) {
+		baseDelay := 5 * time.Second
+		maxDelay := 1 * time.Second
+		jitter := NewJitter(baseDelay, maxDelay)
+
+		assert.Equal(t, baseDelay, jitter.maxDelay)
+	})
+
 	t.Run("SuccessGetNext", func(t *testing.T) {
 		baseDelay := 1 * time.Second
 		maxDelay := 10 * time.Second
