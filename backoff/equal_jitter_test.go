@@ -44,4 +44,10 @@ func TestEqualJitter(t *testing.T) {
 
 		assert.Equal(t, baseDelay, jitter.maxDelay)
 	})
+
+	t.Run("SuccessGetNext", func(t *testing.T) {
+		equalJitter := NewEqualJitter(1*time.Second, 20*time.Second)
+		delay := equalJitter.Next(1)
+		assert.True(t, delay >= 0)
+	})
 }
