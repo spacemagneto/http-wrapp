@@ -70,4 +70,22 @@ func TestEqualJitter(t *testing.T) {
 			assert.True(t, delay < maxExpected, "Delay %v should be < %v", delay, maxExpected)
 		}
 	})
+
+	t.Run("GetNextWithMaxDelay", func(t *testing.T) {
+		baseDelay := 1 * time.Second
+		maxDelay := 3 * time.Second
+		equalJitter := NewEqualJitter(baseDelay, maxDelay)
+
+		// Attempt 10: limit greater than max (3s)
+		// temp = 3s / 2 = 1.5s
+		// Range: [1.5s, 3s)
+
+		minExpected := 1500 * time.Millisecond
+
+		for i := 0; i < 15; i++ {
+			delay := equalJitter.Next(10)
+			assert.GreaterOrEqual(t, delay, minExpected)
+			assert.Less(t, delay, maxDelay)
+		}
+	})
 }
