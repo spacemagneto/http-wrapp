@@ -53,4 +53,17 @@ func TestJitterStrategy(t *testing.T) {
 			assert.Less(t, int64(delay), int64(4*time.Second))
 		}
 	})
+
+	t.Run("SuccessGetNextAndCheckRandomNextDelay", func(t *testing.T) {
+		baseDelay := 1 * time.Second
+		maxDelay := 10 * time.Second
+
+		jitter := NewJitter(baseDelay, maxDelay)
+
+		attempt := 5
+		first := jitter.Next(attempt)
+		second := jitter.Next(attempt)
+
+		assert.NotEqual(t, first, second)
+	})
 }
