@@ -68,7 +68,7 @@ func TestJitterStrategy(t *testing.T) {
 
 		jitter := NewJitter(baseDelay, maxDelay)
 
-		attempt := 5
+		attempt := int64(5)
 		first := jitter.Next(attempt)
 		second := jitter.Next(attempt)
 

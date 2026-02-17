@@ -40,7 +40,7 @@ func NewExponentialWithStep(delay, max time.Duration, step float64) *Exponential
 	return &Exponential{baseDelay: delay, maxDelay: max, step: step}
 }
 
-func (e *Exponential) Next(attempt int) time.Duration {
+func (e *Exponential) Next(attempt int64) time.Duration {
 	// calculate the delay: base * step^attempt
 	delay := time.Duration(float64(e.baseDelay) * math.Pow(e.step, float64(attempt)))
 

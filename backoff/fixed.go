@@ -16,6 +16,6 @@ func NewFixed(delay time.Duration) *Fixed {
 	return &Fixed{delay: delay}
 }
 
-func (f *Fixed) Next(_ int) time.Duration {
+func (f *Fixed) Next(_ int64) time.Duration {
 	return f.delay
 }

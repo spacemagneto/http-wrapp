@@ -3,5 +3,5 @@ package client
 import "time"
 
 type BackoffStrategy interface {
-	Next(attempt int) time.Duration
+	Next(int64) time.Duration
 }

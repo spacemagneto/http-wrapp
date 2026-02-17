@@ -25,7 +25,7 @@ func NewEqualJitter(delay, max time.Duration) *EqualJitter {
 	return &EqualJitter{baseDelay: delay, maxDelay: max}
 }
 
-func (e *EqualJitter) Next(attempt int) time.Duration {
+func (e *EqualJitter) Next(attempt int64) time.Duration {
 	// temp = min(cap, base * 2 ** attempt)
 	// sleep = temp / 2 + random_between(0, temp / 2)
 	// https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/

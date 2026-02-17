@@ -30,7 +30,7 @@ func NewJitter(delay, max time.Duration) *Jitter {
 	return &Jitter{baseDelay: delay, maxDelay: max}
 }
 
-func (j *Jitter) Next(attempt int) time.Duration {
+func (j *Jitter) Next(attempt int64) time.Duration {
 	// sleep = random_between(0, min(cap, base * 2 ** attempt))
 	// https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
 	limit := int64(j.baseDelay) * (1 << uint64(attempt))
