@@ -66,4 +66,15 @@ func TestJitterStrategy(t *testing.T) {
 
 		assert.NotEqual(t, first, second)
 	})
+
+	t.Run("OverflowProtection", func(t *testing.T) {
+		baseDelay := 1 * time.Second
+		maxDelay := 1 * time.Hour
+
+		jitter := NewJitter(baseDelay, maxDelay)
+
+		delay := jitter.Next(100)
+		assert.LessOrEqual(t, delay, jitter.maxDelay)
+		assert.GreaterOrEqual(t, delay, time.Duration(0))
+	})
 }
