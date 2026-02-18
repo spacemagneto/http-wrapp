@@ -1,7 +1,7 @@
 package backoff
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"time"
 )
 
@@ -31,6 +31,7 @@ func (d *DecorrelatedJitter) Next(previousDelay int64) time.Duration {
 	if high < d.baseDelay {
 		high = d.baseDelay
 	}
+
 	if high > d.maxDelay {
 		high = d.maxDelay
 	}
@@ -40,5 +41,5 @@ func (d *DecorrelatedJitter) Next(previousDelay int64) time.Duration {
 		return d.baseDelay
 	}
 
-	return d.baseDelay + time.Duration(rand.Int63n(diff+1))
+	return d.baseDelay + time.Duration(rand.Int64N(diff+1))
 }

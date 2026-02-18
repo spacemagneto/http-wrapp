@@ -1,7 +1,7 @@
 package backoff
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"time"
 )
 
@@ -39,7 +39,7 @@ func (e *EqualJitter) Next(attempt int64) time.Duration {
 
 	var delay int64
 	if temp > 0 {
-		delay = rand.Int63n(temp)
+		delay = rand.Int64N(temp)
 	}
 
 	return time.Duration(temp + delay)

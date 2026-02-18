@@ -1,7 +1,7 @@
 package backoff
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"time"
 )
 
@@ -39,5 +39,5 @@ func (j *Jitter) Next(attempt int64) time.Duration {
 		limit = int64(j.maxDelay)
 	}
 
-	return time.Duration(rand.Int63n(limit))
+	return time.Duration(rand.Int64N(limit))
 }
