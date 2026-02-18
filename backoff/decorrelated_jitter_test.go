@@ -67,7 +67,7 @@ func TestDecorrelatedJitter(t *testing.T) {
 		baseDelay := 1 * time.Second
 		maxDelay := 10 * time.Second
 
-		decorrelatedJitter := NewEqualJitter(baseDelay, maxDelay)
+		decorrelatedJitter := NewDecorrelatedJitter(baseDelay, maxDelay)
 
 		// If the previous delay was 2 seconds:
 		// high = min(10s, 2s * 3) = 6s
@@ -76,9 +76,25 @@ func TestDecorrelatedJitter(t *testing.T) {
 		maxExpected := 6 * time.Second
 
 		for i := 0; i < 15; i++ {
-			delay := decorrelatedJitter.Next(2)
+			delay := decorrelatedJitter.Next(int64(2 * time.Second))
 			assert.True(t, delay >= minExpected, "Delay %v should be >= %v", delay, minExpected)
 			assert.True(t, delay < maxExpected, "Delay %v should be < %v", delay, maxExpected)
+		}
+	})
+
+	t.Run("ReturnsNextWithHighExceedsMaxDelay", func(t *testing.T) {
+		baseDelay := 1 * time.Second
+		maxDelay := 5 * time.Second
+
+		decorrelatedJitter := NewDecorrelatedJitter(baseDelay, maxDelay)
+
+		// When transferring 10s: high = 10s * 3 = 30s.
+		// 30s > 5s (maxDelay), so high will be 5s.
+		// Expected range: [1s, 5s]
+		for i := 0; i < 15; i++ {
+			delay := decorrelatedJitter.Next(int64(10 * time.Second))
+			assert.True(t, delay >= baseDelay)
+			assert.True(t, delay <= maxDelay)
 		}
 	})
 }
