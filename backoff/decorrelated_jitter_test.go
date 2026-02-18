@@ -53,4 +53,12 @@ func TestDecorrelatedJitter(t *testing.T) {
 		delay := equalJitter.Next(1)
 		assert.True(t, delay >= 0)
 	})
+
+	t.Run("CheckMinDelay", func(t *testing.T) {
+		baseDelay := 1 * time.Second
+		maxDelay := 10 * time.Second
+
+		dj := NewDecorrelatedJitter(baseDelay, maxDelay)
+		assert.Equal(t, baseDelay, dj.Next(0))
+	})
 }
