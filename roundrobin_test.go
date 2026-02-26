@@ -23,8 +23,8 @@ func TestRoundRobin(t *testing.T) {
 		assert.NotNil(t, roundRobin)
 		assert.Equal(t, uint64(0), roundRobin.counter.Load())
 
-		nextProxy := roundRobin.Next(nil)
-		assert.Nil(t, nextProxy)
+		nextEntry := roundRobin.Next(nil)
+		assert.Nil(t, nextEntry)
 		assert.Equal(t, uint64(0), roundRobin.counter.Load())
 	})
 
@@ -33,10 +33,10 @@ func TestRoundRobin(t *testing.T) {
 		assert.NotNil(t, roundRobin)
 		assert.Equal(t, uint64(0), roundRobin.counter.Load())
 
-		entries := []Proxy{&mockProxy{id: 1}, &mockProxy{id: 2}, &mockProxy{id: 3}}
-		assert.Equal(t, entries[1], roundRobin.Next(entries))
-		assert.Equal(t, entries[2], roundRobin.Next(entries))
-		assert.Equal(t, entries[0], roundRobin.Next(entries))
-		assert.Equal(t, entries[1], roundRobin.Next(entries))
+		entries := []*Entry{newEntry(&mockProxy{id: 1}), newEntry(&mockProxy{id: 2}), newEntry(&mockProxy{id: 3})}
+		assert.Equal(t, entries[1].Proxy(), roundRobin.Next(entries).Proxy())
+		assert.Equal(t, entries[2].Proxy(), roundRobin.Next(entries).Proxy())
+		assert.Equal(t, entries[0].Proxy(), roundRobin.Next(entries).Proxy())
+		assert.Equal(t, entries[1].Proxy(), roundRobin.Next(entries).Proxy())
 	})
 }
