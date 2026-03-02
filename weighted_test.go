@@ -1,7 +1,19 @@
 package client
 
-import "testing"
+import (
+	"testing"
 
-func TestWeighted(t *testing.T) {
+	"github.com/stretchr/testify/assert"
+)
 
+func TestWeightedRandom(t *testing.T) {
+	t.Parallel()
+
+	t.Run("EmptyEntries", func(t *testing.T) {
+		weighted := &WeightedRandom{}
+		assert.NotNil(t, weighted)
+
+		nextEntry := weighted.Next(nil)
+		assert.Nil(t, nextEntry)
+	})
 }
