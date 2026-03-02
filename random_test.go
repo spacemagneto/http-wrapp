@@ -14,11 +14,11 @@ func TestRandom(t *testing.T) {
 		randomRotation := &Random{}
 		assert.NotNil(t, randomRotation)
 
-		nextEntry := randomRotation.Next(nil)
+		nextEntry := randomRotation.Select(nil)
 		assert.Nil(t, nextEntry)
 	})
 
-	t.Run("SuccessGetNextProxy", func(t *testing.T) {
+	t.Run("SuccessSelectProxy", func(t *testing.T) {
 		randomRotation := &Random{}
 		assert.NotNil(t, randomRotation)
 
@@ -26,7 +26,7 @@ func TestRandom(t *testing.T) {
 		expectProxy := &mockProxy{id: randValue}
 
 		entries := []*Entry{newEntry(expectProxy)}
-		nextProxy := randomRotation.Next(entries)
+		nextProxy := randomRotation.Select(entries)
 		assert.NotNil(t, nextProxy)
 		assert.Equal(t, expectProxy, nextProxy.Proxy())
 	})

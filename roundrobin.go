@@ -6,7 +6,7 @@ type RoundRobin struct {
 	counter atomic.Uint64
 }
 
-func (r *RoundRobin) Next(entries []*Entry) *Entry {
+func (r *RoundRobin) Select(entries []*Entry) *Entry {
 	if len(entries) == 0 {
 		return nil
 	}
