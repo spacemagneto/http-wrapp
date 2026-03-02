@@ -1,6 +1,7 @@
 package client
 
 import (
+	"math/rand/v2"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,5 +16,18 @@ func TestRandom(t *testing.T) {
 
 		nextEntry := randomRotation.Next(nil)
 		assert.Nil(t, nextEntry)
+	})
+
+	t.Run("SuccessGetNextProxy", func(t *testing.T) {
+		randomRotation := &Random{}
+		assert.NotNil(t, randomRotation)
+
+		randValue := rand.Int()
+		expectProxy := &mockProxy{id: randValue}
+
+		entries := []*Entry{newEntry(expectProxy)}
+		nextProxy := randomRotation.Next(entries)
+		assert.NotNil(t, nextProxy)
+		assert.Equal(t, expectProxy, nextProxy.Proxy())
 	})
 }
