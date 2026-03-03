@@ -2,6 +2,7 @@ package client
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -32,5 +33,19 @@ func TestStats(t *testing.T) {
 		assert.Equal(t, int32(0), stats.ConsecutiveFails())
 		assert.Equal(t, int64(1), stats.SuccessCount())
 		assert.Equal(t, int64(2), stats.TotalFails())
+	})
+
+	t.Run("RecordFailed", func(t *testing.T) {
+		stats := &Stats{}
+
+		beforeFailed := time.Now().UnixNano()
+		stats.RecordFailed()
+		afterFailed := time.Now().UnixNano()
+
+		assert.Equal(t, int64(1), stats.ConsecutiveFails())
+		assert.Equal(t, int64(1), stats.TotalFails())
+
+		lastFailed := stats.LastFailedTime().UnixNano()
+		assert.True(t, lastFailed >= beforeFailed && lastFailed <= afterFailed)
 	})
 }
