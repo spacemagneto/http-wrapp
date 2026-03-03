@@ -12,7 +12,7 @@ func TestStats(t *testing.T) {
 
 	t.Run("InitialState", func(t *testing.T) {
 		stats := &Stats{}
-		assert.Equal(t, int32(0), stats.ConsecutiveFails())
+		assert.Equal(t, int64(0), stats.ConsecutiveFails())
 		assert.Equal(t, int64(0), stats.SuccessCount())
 		assert.Equal(t, int64(0), stats.TotalFails())
 		assert.Equal(t, 0.0, stats.AvgLatencyMs())
@@ -27,10 +27,10 @@ func TestStats(t *testing.T) {
 
 		stats.RecordFailed()
 		stats.RecordFailed()
-		assert.Equal(t, int32(2), stats.ConsecutiveFails())
+		assert.Equal(t, int64(2), stats.ConsecutiveFails())
 
 		stats.RecordSuccess()
-		assert.Equal(t, int32(0), stats.ConsecutiveFails())
+		assert.Equal(t, int64(0), stats.ConsecutiveFails())
 		assert.Equal(t, int64(1), stats.SuccessCount())
 		assert.Equal(t, int64(2), stats.TotalFails())
 	})
@@ -47,5 +47,15 @@ func TestStats(t *testing.T) {
 
 		lastFailed := stats.LastFailedTime().UnixNano()
 		assert.True(t, lastFailed >= beforeFailed && lastFailed <= afterFailed)
+	})
+
+	t.Run("RecordLatency", func(t *testing.T) {
+		stats := &Stats{}
+		stats.RecordLatency(50)
+		stats.RecordLatency(50)
+		stats.RecordLatency(300)
+		stats.RecordLatency(200)
+
+		assert.Equal(t, float64(150), stats.AvgLatencyMs())
 	})
 }
