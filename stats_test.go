@@ -20,4 +20,17 @@ func TestStats(t *testing.T) {
 		assert.True(t, stats.LastFailedTime().IsZero())
 		assert.True(t, stats.LastUsedTime().IsZero())
 	})
+
+	t.Run("RecordSuccess", func(t *testing.T) {
+		stats := &Stats{}
+
+		stats.RecordFailed()
+		stats.RecordFailed()
+		assert.Equal(t, int32(2), stats.ConsecutiveFails())
+
+		stats.RecordSuccess()
+		assert.Equal(t, int32(0), stats.ConsecutiveFails())
+		assert.Equal(t, int64(1), stats.SuccessCount())
+		assert.Equal(t, int64(2), stats.TotalFails())
+	})
 }
