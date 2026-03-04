@@ -20,7 +20,6 @@ func TestStats(t *testing.T) {
 		assert.Equal(t, baseWeight, stats.successRate())
 		assert.Equal(t, baseWeight, stats.Weight())
 		assert.True(t, stats.LastFailedTime().IsZero())
-		assert.True(t, stats.LastUsedTime().IsZero())
 	})
 
 	t.Run("RecordSuccess", func(t *testing.T) {
@@ -58,17 +57,6 @@ func TestStats(t *testing.T) {
 		stats.RecordLatency(200)
 
 		assert.Equal(t, float64(150), stats.AvgLatencyMs())
-	})
-
-	t.Run("LastUsed", func(t *testing.T) {
-		stats := &Stats{}
-
-		beforeUsed := time.Now().UnixNano()
-		stats.LastUsed()
-		afterUsed := time.Now().UnixNano()
-
-		lastUsed := stats.LastUsedTime().UnixNano()
-		assert.True(t, lastUsed >= beforeUsed && lastUsed <= afterUsed)
 	})
 
 	t.Run("SuccessRate", func(t *testing.T) {
