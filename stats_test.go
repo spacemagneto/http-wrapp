@@ -81,4 +81,19 @@ func TestStats(t *testing.T) {
 		proxyRate := stats.successRate()
 		assert.Equal(t, 0.6, math.Trunc(proxyRate*10)/10)
 	})
+
+	t.Run("SuccessRateWithMixedResults", func(t *testing.T) {
+		stats := &Stats{}
+
+		stats.RecordSuccess()
+		stats.RecordFailed()
+		stats.RecordFailed()
+		stats.RecordFailed()
+		stats.RecordFailed()
+		stats.RecordFailed()
+		stats.RecordSuccess()
+
+		proxyRate := stats.successRate()
+		assert.Equal(t, 0.2, math.Trunc(proxyRate*10)/10)
+	})
 }
