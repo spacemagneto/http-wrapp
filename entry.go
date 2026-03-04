@@ -1,14 +1,18 @@
 package client
 
-type entry struct {
+type Entry struct {
 	proxy Proxy
-	stats proxyStats
+	stats Stats
 }
 
-func newEntry(proxy Proxy) *entry {
-	return &entry{proxy: proxy}
+func newEntry(proxy Proxy) *Entry {
+	return &Entry{proxy: proxy}
 }
 
-func (e *entry) Proxy() Proxy {
+func (e *Entry) Proxy() Proxy {
 	return e.proxy
+}
+
+func (e *Entry) Stats() *Stats {
+	return &e.stats
 }
