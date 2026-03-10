@@ -10,6 +10,17 @@ import (
 func TestProxyPool(t *testing.T) {
 	t.Parallel()
 
+	t.Run("PoolConfigCustomValues", func(t *testing.T) {
+		selector := &RoundRobinSelector{}
+		cfg := PoolConfig{Selector: selector}
+
+		pool := NewPool([]Proxy{&mockProxy{}}, cfg)
+
+		assert.Equal(t, int64(3), pool.cfg.MaxFails)
+		assert.Equal(t, 30*time.Second, pool.cfg.CooldownWindow)
+		assert.Equal(t, selector, pool.cfg.Selector)
+	})
+
 	t.Run("DefaultPoolConfigValues", func(t *testing.T) {
 		cfg := defaultPoolConfig()
 
