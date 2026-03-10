@@ -30,4 +30,16 @@ func TestProxyEntry(t *testing.T) {
 		isHealthy := entry.HealthCheck(3, time.Minute)
 		assert.True(t, isHealthy)
 	})
+
+	t.Run("HealthCheckWithQuarantine", func(t *testing.T) {
+		expectProxy := &mockProxy{id: 1}
+		entry := newEntry(expectProxy)
+
+		entry.stats.RecordFailed()
+		entry.stats.RecordFailed()
+		entry.stats.RecordFailed()
+
+		isHealthy := entry.HealthCheck(3, time.Minute)
+		assert.False(t, isHealthy)
+	})
 }
