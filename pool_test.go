@@ -20,4 +20,24 @@ func TestProxyPool(t *testing.T) {
 		_, ok := cfg.Selector.(*RoundRobinSelector)
 		assert.True(t, ok)
 	})
+
+	t.Run("HealthyEntriesFilteringLogic", func(t *testing.T) {
+		proxies := []Proxy{&mockProxy{id: 1}, &mockProxy{id: 2}, &mockProxy{id: 3}}
+
+		cfg := PoolConfig{MaxFails: 2, CooldownWindow: time.Minute}
+
+		pool := NewPool(proxies, cfg)
+		assert.NotNil(t, pool)
+
+		pool.entries[1].Stats().RecordFailed()
+		pool.entries[2].Stats().RecordFailed()
+		pool.entries[2].Stats().RecordFailed()
+		pool.entries[2].Stats().RecordFailed()
+
+		healthy := pool.healthyEntries()
+
+		assert.Len(t, healthy, 2)
+		assert.Equal(t, pool.entries[0], healthy[0])
+		assert.Equal(t, pool.entries[1], healthy[1])
+	})
 }
