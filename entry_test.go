@@ -42,4 +42,16 @@ func TestProxyEntry(t *testing.T) {
 		isHealthy := entry.HealthCheck(3, time.Minute)
 		assert.False(t, isHealthy)
 	})
+
+	t.Run("HealthCheckWithCooldownExpired", func(t *testing.T) {
+		expectProxy := &mockProxy{id: 1}
+		entry := newEntry(expectProxy)
+
+		entry.Stats().RecordFailed()
+
+		time.Sleep(time.Millisecond * 20)
+
+		isHealthy := entry.HealthCheck(1, 10*time.Millisecond)
+		assert.True(t, isHealthy)
+	})
 }
