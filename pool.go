@@ -75,7 +75,7 @@ func (p *Pool) Pick() (*Entry, error) {
 	entriesList := healthy
 	if len(entriesList) == 0 {
 		if len(all) == 0 {
-			return nil, ErrNoProxies
+			return nil, ErrProxyPoolEmpty
 		}
 
 		entriesList = all

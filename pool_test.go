@@ -98,7 +98,7 @@ func TestProxyPool(t *testing.T) {
 
 		_, err := pool.Pick()
 		assert.Error(t, err)
-		assert.ErrorIs(t, ErrNoProxies, err)
+		assert.ErrorIs(t, ErrProxyPoolEmpty, err)
 	})
 
 	t.Run("PickStaleProxyBecauseNoNaveHealthyEntries", func(t *testing.T) {
