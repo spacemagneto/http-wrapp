@@ -1,4 +1,4 @@
-package backoff
+package client
 
 import (
 	"testing"
@@ -25,16 +25,16 @@ func TestDecorrelatedJitter(t *testing.T) {
 		decorrelatedJitter := NewDecorrelatedJitter(0, 0)
 		assert.NotNil(t, decorrelatedJitter)
 
-		assert.Equal(t, DefaultJitterBaseDelay, decorrelatedJitter.baseDelay)
-		assert.Equal(t, DefaultJitterMaxDelay, decorrelatedJitter.maxDelay)
+		assert.Equal(t, DefaultMinBackoff, decorrelatedJitter.baseDelay)
+		assert.Equal(t, DefaultMaxBackoff, decorrelatedJitter.maxDelay)
 	})
 
 	t.Run("InitStrategyWithInvalidArgs", func(t *testing.T) {
 		decorrelatedJitter := NewDecorrelatedJitter(0, -10*time.Second)
 		assert.NotNil(t, decorrelatedJitter)
 
-		assert.Equal(t, DefaultJitterBaseDelay, decorrelatedJitter.baseDelay)
-		assert.Equal(t, DefaultJitterMaxDelay, decorrelatedJitter.maxDelay)
+		assert.Equal(t, DefaultMinBackoff, decorrelatedJitter.baseDelay)
+		assert.Equal(t, DefaultMaxBackoff, decorrelatedJitter.maxDelay)
 	})
 
 	t.Run("InitStrategyWhenMaxLessThanBase", func(t *testing.T) {
