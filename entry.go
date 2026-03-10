@@ -24,6 +24,12 @@ func (e *Entry) Stats() *Stats {
 	return &e.stats
 }
 
+// HealthCheck reports whether this proxy is eligible to receive requests.
+//
+// A proxy is considered unhealthy when it has accumulated maxConsecutiveFails
+// failures in a row and the cooldown window has not yet elapsed since the
+// last failure. Once the cooldown expires the proxy is given a second chance
+// automatically — no manual reset is required.
 func (e *Entry) HealthCheck(maxFails int64, cooldown time.Duration) bool {
 	if e.stats.ConsecutiveFails() < maxFails {
 		return true
