@@ -89,4 +89,26 @@ func TestProxyPool(t *testing.T) {
 		assert.Error(t, err)
 		assert.ErrorIs(t, ErrNoProxies, err)
 	})
+
+	t.Run("PickStaleProxyBecauseNoNaveHealthyEntries", func(t *testing.T) {
+		proxies := []Proxy{&mockProxy{id: 1}, &mockProxy{id: 2}}
+
+		selector := &RoundRobinSelector{}
+		cfg := PoolConfig{MaxFails: 2, CooldownWindow: time.Minute, Selector: selector}
+
+		pool := NewPool(proxies, cfg)
+		assert.NotNil(t, pool)
+
+		pool.entries[0].Stats().RecordFailed()
+		pool.entries[0].Stats().RecordFailed()
+
+		pool.entries[1].Stats().RecordFailed()
+		pool.entries[1].Stats().RecordFailed()
+
+		entry, err := pool.Pick()
+		assert.NoError(t, err)
+		assert.NotNil(t, entry)
+
+		assert.Equal(t, uint64(1), selector.counter.Load())
+	})
 }
