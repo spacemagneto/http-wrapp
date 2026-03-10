@@ -59,4 +59,20 @@ func TestProxyPool(t *testing.T) {
 
 		assert.Empty(t, healthy)
 	})
+
+	t.Run("SuccessPickEntry", func(t *testing.T) {
+		proxies := []Proxy{&mockProxy{id: 1}, &mockProxy{id: 2}}
+
+		selector := &RoundRobinSelector{}
+		cfg := PoolConfig{MaxFails: 2, CooldownWindow: time.Minute, Selector: selector}
+
+		pool := NewPool(proxies, cfg)
+		assert.NotNil(t, pool)
+
+		entry, err := pool.Pick()
+		assert.NoError(t, err)
+		assert.NotNil(t, entry)
+
+		assert.Equal(t, uint64(1), selector.counter.Load())
+	})
 }
