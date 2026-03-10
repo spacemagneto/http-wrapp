@@ -40,7 +40,7 @@ func NewPool(proxies []Proxy, cfg PoolConfig) *Pool {
 		cfg.Selector = defaultCfg.Selector
 	}
 
-	entries := make([]*Entry, len(proxies))
+	entries := make([]*Entry, 0, len(proxies))
 	for _, proxy := range proxies {
 		entries = append(entries, newEntry(proxy))
 	}
@@ -54,16 +54,16 @@ func (p *Pool) Pick() (*Entry, error) {
 	all := p.entries
 	p.mutex.RUnlock()
 
-	list := healthy
-	if len(list) == 0 {
+	entriesList := healthy
+	if len(entriesList) == 0 {
 		if len(all) == 0 {
 			return nil, ErrNoProxies
 		}
 
-		list = all
+		entriesList = all
 	}
 
-	entry := p.cfg.Selector.Select(list)
+	entry := p.cfg.Selector.Select(entriesList)
 	return entry, nil
 }
 
