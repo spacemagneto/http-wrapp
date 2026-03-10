@@ -5,10 +5,20 @@ import (
 	"time"
 )
 
+// PoolConfig holds the tuning parameters for a Pool.
 type PoolConfig struct {
-	MaxFails       int64
+	// MaxFails is the number of consecutive failures after which
+	// a proxy is placed in quarantine and skipped by Pick.
+	// Defaults to 3 if zero.
+	MaxFails int64
+
+	// CooldownWindow is the duration a proxy stays in quarantine before
+	// being given another chance. Defaults to 30s if zero.
 	CooldownWindow time.Duration
-	Selector       Selector
+
+	// Selector determines which healthy proxy Pick should hand out.
+	// Defaults to RoundRobinSelector if nil.
+	Selector Selector
 }
 
 func defaultPoolConfig() PoolConfig {
@@ -25,6 +35,8 @@ type Pool struct {
 	cfg     PoolConfig
 }
 
+// NewPool creates a Pool from the provided proxies and config.
+// Any zero-value field in cfg is replaced with its default.
 func NewPool(proxies []Proxy, cfg PoolConfig) *Pool {
 	defaultCfg := defaultPoolConfig()
 
@@ -48,6 +60,12 @@ func NewPool(proxies []Proxy, cfg PoolConfig) *Pool {
 	return &Pool{entries: entries, cfg: cfg}
 }
 
+// Pick selects the next proxy to use according to the configured Selector.
+//
+// Only healthy entries (those that pass HealthCheck) are offered to the Selector.
+// If every proxy is currently in quarantine, Pick falls back to selecting from
+// the full list rather than returning an error — this prevents a total stall
+// when all proxies are temporarily degraded.
 func (p *Pool) Pick() (*Entry, error) {
 	p.mutex.RLock()
 	healthy := p.healthyEntries()

@@ -46,7 +46,7 @@ func TestWeightedRandom(t *testing.T) {
 	})
 
 	t.Run("SelectLastProxyWithMockRandFunc", func(t *testing.T) {
-		weightedRandom := &WeightedRandom{
+		weightedRandom := &WeightedSelector{
 			randFloat64: func() float64 { return 1.1 },
 		}
 

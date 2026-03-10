@@ -11,7 +11,7 @@ func TestRandom(t *testing.T) {
 	t.Parallel()
 
 	t.Run("EmptyEntries", func(t *testing.T) {
-		randomRotation := &Random{}
+		randomRotation := &RandomSelector{}
 		assert.NotNil(t, randomRotation)
 
 		nextEntry := randomRotation.Select(nil)
@@ -19,7 +19,7 @@ func TestRandom(t *testing.T) {
 	})
 
 	t.Run("SuccessSelectProxy", func(t *testing.T) {
-		randomRotation := &Random{}
+		randomRotation := &RandomSelector{}
 		assert.NotNil(t, randomRotation)
 
 		randValue := rand.Int()

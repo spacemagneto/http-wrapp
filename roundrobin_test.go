@@ -19,7 +19,7 @@ func TestRoundRobin(t *testing.T) {
 	t.Parallel()
 
 	t.Run("EmptyEntries", func(t *testing.T) {
-		roundRobin := &RoundRobin{}
+		roundRobin := &RoundRobinSelector{}
 		assert.NotNil(t, roundRobin)
 		assert.Equal(t, uint64(0), roundRobin.counter.Load())
 
@@ -29,7 +29,7 @@ func TestRoundRobin(t *testing.T) {
 	})
 
 	t.Run("SuccessSelectProxy", func(t *testing.T) {
-		roundRobin := &RoundRobin{}
+		roundRobin := &RoundRobinSelector{}
 		assert.NotNil(t, roundRobin)
 		assert.Equal(t, uint64(0), roundRobin.counter.Load())
 

@@ -2,15 +2,26 @@ package client
 
 import "math/rand/v2"
 
-type WeightedRandom struct {
+// WeightedSelector picks an entry at random, with probability proportional
+// to each entry's Weight (derived from success rate and average latency).
+//
+// Unlike a deterministic "pick the best" approach, this distributes load
+// across all healthy proxies while still favouring better-performing ones.
+// This also avoids the thundering-herd problem where all requests pile onto
+// a single proxy just because it has the highest score.
+type WeightedSelector struct {
 	randFloat64 func() float64
 }
 
-func NewWeightedRandom() *WeightedRandom {
-	return &WeightedRandom{randFloat64: rand.Float64}
+// NewWeightedRandom initializes a new selector with the standard
+// math/rand generator.
+func NewWeightedRandom() *WeightedSelector {
+	return &WeightedSelector{randFloat64: rand.Float64}
 }
 
-func (w *WeightedRandom) Select(entries []*Entry) *Entry {
+// Select returns a randomly chosen entry weighted by Stats.Weight.
+// Entries with weight 0 are effectively excluded from selection.
+func (w *WeightedSelector) Select(entries []*Entry) *Entry {
 	if len(entries) == 0 {
 		return nil
 	}
