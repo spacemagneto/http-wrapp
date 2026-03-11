@@ -18,3 +18,33 @@ type Backoff interface {
 	// configured during the strategy's initialization.
 	Next(arg int64) time.Duration
 }
+
+const (
+	// DefaultMaxAttempts is the maximum of attempts for an API request
+	DefaultMaxAttempts int = 3
+
+	// DefaultMinBackoff is the starting delay used if a strategy
+	// is initialized with a zero or negative duration.
+	DefaultMinBackoff = 1 * time.Second
+
+	// DefaultMaxBackoff is the upper limit for any delay.
+	// No strategy will return a value exceeding this threshold.
+	DefaultMaxBackoff = 20 * time.Second
+
+	// DefaultStep is the base factor for exponential growth.
+	// A value of 2.0 represents a standard binary exponential backoff.
+	DefaultStep = 2.0
+)
+
+// DefaultRetryHTTPStatusCodes is the default set of HTTP status codes they
+// should consider as retry errors.
+var DefaultRetryHTTPStatusCodes = map[int]struct{}{
+	429: {},
+	500: {},
+}
+
+// DefaultRetryErrorCodes provides the set of API error codes that should
+// be retried.
+var DefaultRetryErrorCodes = map[string]struct{}{
+	"RequestTimeout": {},
+}
